@@ -2540,7 +2540,6 @@ public abstract class AbsSwipeUpHandler<T extends StatefulActivity<S>, Q extends
             startInterceptingTouchesForGesture();
         }
         for (RemoteTargetHandle remoteHandle : mRemoteTargetHandles) {
-            float scrollScale = setRecentsScroll ? mRecentsView.getScrollScale(remoteHandle) : 1f;
             AnimatorControllerWithResistance playbackController = remoteHandle.getPlaybackController();
             if (playbackController != null) {
                 playbackController.setProgress(progress, mDragLengthFactor);
@@ -2548,7 +2547,6 @@ public abstract class AbsSwipeUpHandler<T extends StatefulActivity<S>, Q extends
 
             if (notSwipingToHome) {
                 TaskViewSimulator taskViewSimulator = remoteHandle.getTaskViewSimulator();
-                taskViewSimulator.scrollScale.value = scrollScale;
                 if (setRecentsScroll) {
                     taskViewSimulator.setScroll(scrollOffset);
                 }

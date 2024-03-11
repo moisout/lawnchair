@@ -3722,34 +3722,9 @@ public abstract class RecentsView<ACTIVITY_TYPE extends StatefulActivity<STATE_T
                     if (child.getScaleX() <= dismissedTaskView.getScaleX()) {
                         anim.setFloat(child, SCALE_PROPERTY,
                             dismissedTaskView.getScaleX(), LINEAR);
-                        if (child instanceof TaskView && mRemoteTargetHandles != null) {
-                            TaskView tv = (TaskView) child;
-                            for (RemoteTargetHandle rth : mRemoteTargetHandles) {
-                                TransformParams params = rth.getTransformParams();
-                                RemoteAnimationTargets targets = params.getTargetSet();
-                                boolean match = false;
-                                for (int id : tv.getTaskIds()) {
-                                    if (targets != null && targets.findTask(id) != null) {
-                                        match = true;
-                                    }
-                                }
-                                if (match) {
-                                    anim.addOnFrameCallback(() -> {
-                                        rth.getTaskViewSimulator().scrollScale.value =
-                                                mOrientationHandler.getPrimaryValue(
-                                                    tv.getScaleX(),
-                                                    tv.getScaleY()
-                                                );
-                                        // if scrollDiff != 0, we redraw in later(AOSP) code
-                                        if (mEnableDrawingLiveTile && scrollDiff == 0) {
-                                            redrawLiveTile();
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    } else
+                    } else {
                         anim.setFloat(child, SCALE_PROPERTY, 1f, LINEAR);
+                    }
                 }
 
                 if (scrollDiff != 0) {
@@ -6230,42 +6205,7 @@ public abstract class RecentsView<ACTIVITY_TYPE extends StatefulActivity<STATE_T
                 child.setScaleX(scale);
                 child.setScaleY(scale);
             }
-            if (!(child instanceof TaskView && mRemoteTargetHandles != null)) continue;
-            TaskView tv = (TaskView) child;
-            for (RemoteTargetHandle rth : mRemoteTargetHandles) {
-                TransformParams params = rth.getTransformParams();
-                RemoteAnimationTargets targets = params.getTargetSet();
-                for (int id : tv.getTaskIds()) {
-                    if (targets != null && targets.findTask(id) != null) {
-                        rth.getTaskViewSimulator().scrollScale.value =
-                                mOrientationHandler.getPrimaryValue(
-                                    tv.getScaleX(),
-                                    tv.getScaleY()
-                                );
-                    }
-                }
-            }
         }
-    }
-
-    public float getScrollScale(RemoteTargetHandle rth) {
-        int childCount = Math.min(mPageScrolls.length, getChildCount());
-        for (int i = 0; i < childCount; i++) {
-            View child = getChildAt(i);
-            if (!(child instanceof TaskView && !showAsGrid())) continue;
-            TaskView tv = (TaskView) child;
-            TransformParams params = rth.getTransformParams();
-            RemoteAnimationTargets targets = params.getTargetSet();
-            for (int id : tv.getTaskIds()) {
-                if (targets != null && targets.findTask(id) != null) {
-                    return mOrientationHandler.getPrimaryValue(
-                                tv.getScaleX(),
-                                tv.getScaleY()
-                           );
-                }
-            }
-        }
-        return 1f;
     }
 
     private void dispatchScrollChanged() {
